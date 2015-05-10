@@ -1,0 +1,35 @@
+{
+  "name": "frozen-moment",
+  "main": "frozen-moment.js",
+  "version": "0.1.0-dev",
+  "homepage": "https://github.com/WhoopInc/frozen-moment",
+  "authors": [
+    "Lucas Sanders <sanders@whoop.com>"
+  ],
+  "description": "Immutability for Moment.js. Freeze moments so that mutation methods return copies instead of altering the original timestamp.",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "time",
+    "date",
+    "moment",
+    "immutable",
+    "clone",
+    "freeze",
+    "frozen"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "moment": "~2.10"
+  }
+}

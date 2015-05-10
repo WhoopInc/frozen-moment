@@ -8,7 +8,29 @@
   }
 }(this, function(moment) {
 
-  var patchMethods = ['add', /* other methods here */];
+  var immutableMethods = [
+    // Display
+    'format',
+    'fromNow',
+    'from',
+    'calendar',
+    'diff',
+    'valueOf',
+    'unix',
+    'daysInMonth',
+    'toArray',
+    'toJSON',
+    'toISOString',
+    // Query
+    'isBefore',
+    'isSame',
+    'isAfter',
+    'isBetween',
+    'isLeapYear',
+    'isDST',
+    'isDSTShifted'
+  ];
+
   var frozenProto = Object.create(moment.fn);
   function frozenMethodGenerator(orig) {
     return function () {
@@ -22,16 +44,20 @@
       }
     }
   }
-  for (var i = 0, len = patchMethods.length; i < len; i++) {
-    var methodToPatch = patchMethods[i];
-    var originalMethod = moment.fn[methodToPatch];
-    frozenProto[methodToPatch] = frozenMethodGenerator(originalMethod);
+
+  for (var key in moment.fn) {
+    var func = moment.fn[key];
+    if (moment.fn.hasOwnProperty(key) && typeof func === 'function') {
+      if (immutableMethods.indexOf(key) === -1) {
+        frozenProto[key] = frozenMethodGenerator(func);
+      }
+    }
   }
   moment.fn.isFrozen = function () {
     return this.__frozen;
   };
   moment.fn.freeze = function () {
-    var props = this.clone();
+    var props = moment.fn.clone.apply(this);
     var frozen = Object.create(frozenProto);
     mixin(frozen, props);
     return frozen;

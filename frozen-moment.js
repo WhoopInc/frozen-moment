@@ -6,9 +6,15 @@
   } else {
     global.moment = factory(global.moment);
   }
-}(this, function(moment) {
+}(this, function (moment) {
 
   var immutableMethods = [
+    // Get
+    'weeksInYear',
+    'isoWeeksInYear',
+    'get',
+    'max',
+    'min',
     // Display
     'format',
     'fromNow',
@@ -31,10 +37,41 @@
     'isDSTShifted'
   ];
 
-  var frozenProto = Object.create(moment.fn);
+  // moment has a lot of overloaded getters and setters, where calling the
+  // method with no arguments will run an immutable getter, and calling the
+  // method with one or more arguments will run a mutating setter.
+  var mutatorsIfArguments = [
+    // Get + Set
+    'millisecond', 'milliseconds',
+    'second', 'seconds',
+    'minute', 'minutes',
+    'hour', 'hours',
+    'date', 'dates',
+    'day', 'days',
+    'weekday',
+    'isoWeekday',
+    'dayOfYear',
+    'week', 'weeks',
+    'isoWeek', 'isoWeeks',
+    'month', 'months',
+    'quarter',
+    'year', 'years',
+    'weekYear',
+    'isoWeekYear',
+    'set'
+  ];
+
   function frozenMethodGenerator(orig) {
     return function () {
       return orig.apply(this.freeze(), arguments);
+    };
+  }
+  function frozenIfArgumentsMethodGenerator(orig) {
+    return function () {
+      if (arguments.length) {
+        return orig.apply(this.freeze(), arguments);
+      }
+      return orig.apply(this);
     };
   }
   function mixin(dest, props) {
@@ -45,12 +82,20 @@
     }
   }
 
+  var frozenProto = Object.create(moment.fn);
   for (var key in moment.fn) {
     var func = moment.fn[key];
-    if (moment.fn.hasOwnProperty(key) && typeof func === 'function') {
-      if (immutableMethods.indexOf(key) === -1) {
+
+    if (moment.fn.hasOwnProperty(key)
+        && typeof func === 'function'
+        && immutableMethods.indexOf(key) === -1) {
+
+      if (mutatorsIfArguments.indexOf(key) === -1) {
         frozenProto[key] = frozenMethodGenerator(func);
+      } else {
+        frozenProto[key] = frozenIfArgumentsMethodGenerator(func);
       }
+
     }
   }
   moment.fn.isFrozen = function () {

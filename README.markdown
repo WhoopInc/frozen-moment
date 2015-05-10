@@ -12,24 +12,20 @@ Unfortunately, this leads to subtle bugs if you pass moments around and then
 start to do math on them while expecting other places to still have the old
 value.
 
-Or maybe you're smarter than me, and yet you've
-[still](https://github.com/moment/moment/pull/132)
-[wished](https://github.com/moment/moment/issues/1107)
+Or maybe you're smarter than me, and yet you still
+[wish](https://github.com/moment/moment/issues/1107)
 [that](https://github.com/moment/moment/issues/961)
-Moment's
-[API](https://github.com/moment/moment/issues/1737#issuecomment-47129996)
-[was](https://github.com/moment/moment/issues/1661)
-[immutable](https://github.com/moment/moment/pull/390).
+[Moment](https://github.com/moment/moment/pull/132)
+[had an](https://github.com/moment/moment/issues/1661)
+[immutable](https://github.com/moment/moment/pull/390)
+[API](https://github.com/moment/moment/issues/1737#issuecomment-47129996).
 It gets annoying to keep typing `moment.clone()` all the time.
 
 Either way, this plugin is for you.
 
-## API Reference:  What ~~does~~ _will_ it do?
+## API Reference:  What does it do?
 
-Well... right now, this is just a README.  But I promise there will be code
-here soon.  (If you want to help with writing the code, please let me know!)
-
-Frozen Moment will be a plugin for Moment.js.  With Frozen Moment, all of your
+Frozen Moment is a plugin for Moment.js.  With Frozen Moment, all of your
 normal moments will still work the same way they always have -- so you won't
 need to adopt immutability throughout your entire codebase all at once.  Frozen
 Moment simply adds a new method to every moment instance:
@@ -69,6 +65,16 @@ standard moment.
 
 Note that `moment.isMoment()` will return `true` for frozen moments and normal
 moments alike.
+
+## TODO
+
+Frozen Moment should generally work, but we're still in early development.
+Please send us your feedback so that we can make Frozen Moment better!
+
+Pull requests are enthusiastically welcomed for improvements on our
+current [to-do list](https://github.com/WhoopInc/frozen-moment/labels/TODO).
+If you have other ideas for new features, it's often a good idea to get our
+feedback on your plans before you bother writing the code.  In any event, please remember to submit unit tests to verofy your changes.
 
 ## Historical Note
 

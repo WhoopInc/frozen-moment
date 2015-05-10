@@ -3,6 +3,9 @@
   "version": "0.1.0-dev",
   "description": "Immutability for Moment.js. Freeze moments so that mutation methods return copies instead of altering the original timestamp.",
   "main": "frozen-moment.js",
+  "scripts": {
+    "test": "node test.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/WhoopInc/frozen-moment"

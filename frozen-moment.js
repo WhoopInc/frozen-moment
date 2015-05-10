@@ -98,8 +98,15 @@
 
     }
   }
+  frozenProto.thaw = function () {
+    return this.clone();
+  };
+  frozenProto.isFrozen = function () {
+    return true;
+  };
+
   moment.fn.isFrozen = function () {
-    return this.__frozen;
+    return false;
   };
   moment.fn.freeze = function () {
     var props = moment.fn.clone.apply(this);
@@ -107,10 +114,6 @@
     mixin(frozen, props);
     return frozen;
   };
-  frozenProto.thaw = function () {
-    return this.clone();
-  };
-  frozenProto.__frozen = true;
 
   return moment;
 

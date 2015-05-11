@@ -1,5 +1,15 @@
 # Frozen Moment
 
+[![MIT License][license-image]][license-url] [![NPM version][npm-version-image]][npm-url] ![Bower version][bower-version-image]
+
+[npm-version-image]: http://img.shields.io/npm/v/frozen-moment.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/frozen-moment
+
+[bower-version-image]: https://img.shields.io/bower/v/frozen-moment.svg?style=flat-square
+
+[license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
+[license-url]: LICENSE
+
 ## Immutability for Moment.js
 
 If you build large applications that use [Moment.js][], you've

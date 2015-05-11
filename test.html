@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<script src="node_modules/moment/moment.js"></script>
+<script>
+  function require() {
+    return moment;
+  }
+</script>
+<script src="frozen-moment.js"></script>
+<script>
+  function printToDOM(/* ...arguments */) {
+    var str = '';
+    for (var i = 0; i < arguments.length; i++) {
+      str += '  ' + arguments[i];
+    }
+    document.body.innerHTML = document.body.innerHTML + '<p>' + str + '</p>';
+  }
+  function wrapConsole(methodName) {
+    var oldConsole = console[methodName];
+    console[methodName] = function () {
+      oldConsole.apply(this, arguments);
+      printToDOM.apply(this, arguments);
+    };
+  }
+  wrapConsole('error');
+  wrapConsole('log');
+  window.onerror = function (err) {
+    printToDOM('test failed, see console for details');
+  }
+</script>
+<body>
+  <p>Running tests...</p>
+
+  <script src="test.js"></script>
+</body>

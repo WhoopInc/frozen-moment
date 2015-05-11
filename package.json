@@ -1,6 +1,6 @@
 {
   "name": "frozen-moment",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "description": "Immutability for Moment.js. Freeze moments so that mutation methods return copies instead of altering the original timestamp.",
   "main": "frozen-moment.js",
   "scripts": {

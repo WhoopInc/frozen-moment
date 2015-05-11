@@ -1,7 +1,7 @@
 {
   "name": "frozen-moment",
   "main": "frozen-moment.js",
-  "version": "0.1.0-dev",
+  "version": "0.1.0",
   "homepage": "https://github.com/WhoopInc/frozen-moment",
   "authors": [
     "Lucas Sanders <sanders@whoop.com>"

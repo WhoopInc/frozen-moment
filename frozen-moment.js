@@ -115,6 +115,10 @@
     return frozen;
   };
 
+  moment.frozen = function () {
+    return moment.apply(this, arguments).freeze();
+  };
+
   return moment;
 
 }));

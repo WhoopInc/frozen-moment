@@ -38,4 +38,12 @@ assert(frozen2.isAfter(frozen), 'and second moment is really later now');
 assert(frozen.isFrozen() === true, 'first frozen identifies itself properly');
 assert(frozen2.isFrozen() === true, 'and the second frozen also identifies properly');
 
+var frozenUtc = moment.frozenUtc();
+var frozenUtc2 = frozenUtc.add(1, 'days');
+assert(frozenUtc !== frozenUtc2, 'frozenUtc did clone, now two different moments');
+assert(frozenUtc2.isAfter(frozenUtc), 'and second moment is really later now');
+assert(frozenUtc.utcOffset() === 0, 'frozenUtc is actually in UTC');
+assert(frozenUtc.isFrozen() === true, 'first frozenUtc identifies itself properly');
+assert(frozenUtc2.isFrozen() === true, 'and the second frozenUtc also identifies properly');
+
 console.log('all tests passed');

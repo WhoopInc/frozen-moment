@@ -115,6 +115,13 @@
     return frozen;
   };
 
+  moment.frozen = function () {
+    return moment.apply(this, arguments).freeze();
+  };
+  moment.frozenUtc = function () {
+    return moment.utc.apply(this, arguments).freeze();
+  };
+
   return moment;
 
 }));

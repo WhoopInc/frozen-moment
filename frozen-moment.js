@@ -15,10 +15,10 @@
     return obj;
   };
   
-  var includes = Array.prototype.includes.call.bind(Array.prototype.includes) || function(arr, value){
-    var l = arr.length, i = 0; 
+  var includes = Array.prototype.includes || function(value){
+    var l = this.length, i = 0; 
     while(i < l){
-      if(arr[i] === value){
+      if(this[i] === value){
         return true;
       }
     }
@@ -105,9 +105,9 @@
 
     if (moment.fn.hasOwnProperty(key)
         && typeof func === 'function'
-        && !contains(immutableMethods, key)) {
+        && !includes.call(immutableMethods, key)) {
 
-      if (!contains(mutatorsIfArguments, key)) {
+      if (!includes.call(mutatorsIfArguments, key)) {
         frozenProto[key] = frozenMethodGenerator(func);
       } else {
         frozenProto[key] = frozenIfArgumentsMethodGenerator(func);

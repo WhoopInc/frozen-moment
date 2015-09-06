@@ -7,6 +7,13 @@
     global.moment = factory(global.moment);
   }
 }(this, function (moment) {
+  
+  var create = Object.create || function(proto) {
+    var obj = {};
+    obj.__proto__ = proto;
+  
+    return obj;
+  };
 
   var immutableMethods = [
     // Get
@@ -82,7 +89,7 @@
     }
   }
 
-  var frozenProto = Object.create(moment.fn);
+  var frozenProto = create(moment.fn);
   for (var key in moment.fn) {
     var func = moment.fn[key];
 
@@ -110,7 +117,7 @@
   };
   moment.fn.freeze = function () {
     var props = moment.fn.clone.apply(this);
-    var frozen = Object.create(frozenProto);
+    var frozen = create(frozenProto);
     mixin(frozen, props);
     return frozen;
   };

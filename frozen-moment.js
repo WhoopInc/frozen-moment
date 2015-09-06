@@ -14,6 +14,16 @@
   
     return obj;
   };
+  
+  var includes = Array.prototype.includes.call.bind(Array.prototype.includes) || function(arr, value){
+    var l = arr.length, i = 0; 
+    while(i < l){
+      if(arr[i] === value){
+        return true;
+      }
+    }
+    return false;
+  };
 
   var immutableMethods = [
     // Get
@@ -95,9 +105,9 @@
 
     if (moment.fn.hasOwnProperty(key)
         && typeof func === 'function'
-        && immutableMethods.indexOf(key) === -1) {
+        && !contains(immutableMethods, key)) {
 
-      if (mutatorsIfArguments.indexOf(key) === -1) {
+      if (!contains(mutatorsIfArguments, key)) {
         frozenProto[key] = frozenMethodGenerator(func);
       } else {
         frozenProto[key] = frozenIfArgumentsMethodGenerator(func);

@@ -7,14 +7,14 @@
     global.moment = factory(global.moment);
   }
 }(this, function (moment) {
-  
-  var create = Object.create || function(proto) {
+
+  var create = Object.create || function (proto) {
     function FrozenMoment() {}
     FrozenMoment.prototype = proto;
     return new FrozenMoment();
   };
-  
-  var includes = Array.prototype.includes || function(value){
+
+  var includes = Array.prototype.includes || function (value) {
     var length = this.length;
     for (var i = 0; i < length; i++) {
       if (this[i] === value) {

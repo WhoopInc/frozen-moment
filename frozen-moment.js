@@ -8,13 +8,13 @@
   }
 }(this, function (moment) {
 
-  var create = Object.create || function (proto) {
+  var create = Object.create || function createObject(proto) {
     function FrozenMoment() {}
     FrozenMoment.prototype = proto;
     return new FrozenMoment();
   };
 
-  var includes = Array.prototype.includes || function (value) {
+  var includes = Array.prototype.includes || function arrayIncludes(value) {
     var length = this.length;
     for (var i = 0; i < length; i++) {
       if (this[i] === value) {
@@ -114,27 +114,27 @@
 
     }
   }
-  frozenProto.thaw = function () {
+  frozenProto.thaw = function thaw() {
     return this.clone();
   };
-  frozenProto.isFrozen = function () {
+  frozenProto.isFrozen = function isFrozen() {
     return true;
   };
 
-  moment.fn.isFrozen = function () {
+  moment.fn.isFrozen = function isFrozen() {
     return false;
   };
-  moment.fn.freeze = function () {
+  moment.fn.freeze = function freeze() {
     var props = moment.fn.clone.apply(this);
     var frozen = create(frozenProto);
     mixin(frozen, props);
     return frozen;
   };
 
-  moment.frozen = function () {
+  moment.frozen = function frozen() {
     return moment.apply(this, arguments).freeze();
   };
-  moment.frozenUtc = function () {
+  moment.frozenUtc = function frozenUtc() {
     return moment.utc.apply(this, arguments).freeze();
   };
 

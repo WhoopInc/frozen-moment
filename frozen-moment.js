@@ -8,6 +8,7 @@
   }
 }(this, function (moment) {
   var frozenProto;
+  var momentProto = moment.fn;
 
   var create = Object.create || function createObject(proto) {
     function FrozenMoment() {}
@@ -82,15 +83,15 @@
 
   function frozenMethodGenerator(name) {
     return function () {
-      return moment.fn[name].apply(this.freeze(), arguments);
+      return momentProto[name].apply(this.freeze(), arguments);
     };
   }
   function frozenIfArgumentsMethodGenerator(name) {
     return function () {
       if (arguments.length) {
-        return moment.fn[name].apply(this.freeze(), arguments);
+        return momentProto[name].apply(this.freeze(), arguments);
       }
-      return moment.fn[name].apply(this);
+      return momentProto[name].apply(this);
     };
   }
 
@@ -102,25 +103,25 @@
     }
   }
   function freeze() {
-    var props = moment.fn.clone.apply(this);
+    var props = momentProto.clone.apply(this);
     var frozen = create(frozenProto);
     mixin(frozen, props);
     return frozen;
   }
   function thaw() {
-    return moment.fn.clone.call(this);
+    return momentProto.clone.call(this);
   }
 
   function buildFrozenPrototype() {
-    for (var key in moment.fn) {
+    for (var key in momentProto) {
 
       if (key === "freeze") {
         // never wrap Frozen Moment's freeze method
         continue;
       }
 
-      if (moment.fn.hasOwnProperty(key)
-          && typeof moment.fn[key] === 'function'
+      if (momentProto.hasOwnProperty(key)
+          && typeof momentProto[key] === 'function'
           && !includes.call(immutableMethods, key)) {
 
         if (!includes.call(mutatorsIfArguments, key)) {
@@ -142,10 +143,10 @@
 
   // wire up prototypes
 
-  moment.fn.isFrozen = function isFrozen() {
+  momentProto.isFrozen = function isFrozen() {
     return false;
   };
-  moment.fn.freeze = freeze;
+  momentProto.freeze = freeze;
 
   moment.frozen = function frozen() {
     return moment.apply(this, arguments).freeze();
@@ -164,7 +165,7 @@
     }
   };
 
-  frozenProto = moment.frozen.fn = create(moment.fn);
+  frozenProto = moment.frozen.fn = create(momentProto);
   buildFrozenPrototype();
   return moment;
 

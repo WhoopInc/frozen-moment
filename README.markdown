@@ -1,11 +1,12 @@
 # Frozen Moment
 
-[![MIT License][license-image]][license-url] [![NPM version][npm-version-image]][npm-url] ![Bower version][bower-version-image]
+[![MIT License][license-image]][license-url] [![NPM version][npm-version-image]][npm-url] [![Bower version][bower-version-image]][bower-url]
 
 [npm-version-image]: http://img.shields.io/npm/v/frozen-moment.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/frozen-moment
 
 [bower-version-image]: https://img.shields.io/bower/v/frozen-moment.svg?style=flat-square
+[bower-url]: http://bower.io/search/?q=frozen-moment
 
 [license-image]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: LICENSE

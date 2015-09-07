@@ -135,6 +135,7 @@
   moment.frozen = function frozen() {
     return moment.apply(this, arguments).freeze();
   };
+  moment.frozen.fn = frozenProto;
   moment.frozenUtc = function frozenUtc() {
     return moment.utc.apply(this, arguments).freeze();
   };

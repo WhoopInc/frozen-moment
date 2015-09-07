@@ -2,11 +2,16 @@
 
 var moment = require('./frozen-moment');
 
+var numTests = 0;
 function assert(bool, str) {
+  numTests++;
   if (!bool) {
     throw new Error(str);
   }
 }
+
+
+// basic functionality
 
 assert(moment.fn.thaw === undefined, 'moment.fn does not provide thaw');
 
@@ -52,6 +57,9 @@ assert(frozenClone.thaw, 'cloning frozen moment creates another frozen moment');
 frozenClone.add(1, 'days');
 assert(frozenClone.isSame(frozen), 'mutators do not change value of cloned frozen moment');
 
+
+// prototype chain and moment.frozen.fn
+
 if (Object.getPrototypeOf) {
   // TODO Is there a good way to assert the correct prototype chain in IE 8?
   assert(Object.getPrototypeOf(frozen) === moment.frozen.fn, 'published prototype is used for frozen instances');
@@ -64,4 +72,7 @@ moment.frozen.fn.__TEST_PROPERTY = true;
 assert(frozen.__TEST_PROPERTY, 'existing frozen instances reflect changes to published prototype');
 assert(!moment().__TEST_PROPERTY, 'non-frozen moments do not have properties from frozen prototype');
 
-console.log('all tests passed');
+
+// final status report
+
+console.log('all ' + numTests + ' tests passed');

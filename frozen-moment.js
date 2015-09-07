@@ -8,6 +8,22 @@
   }
 }(this, function (moment) {
 
+  var create = Object.create || function (proto) {
+    function FrozenMoment() {}
+    FrozenMoment.prototype = proto;
+    return new FrozenMoment();
+  };
+
+  var includes = Array.prototype.includes || function (value) {
+    var length = this.length;
+    for (var i = 0; i < length; i++) {
+      if (this[i] === value) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   var immutableMethods = [
     // Get
     'weeksInYear',
@@ -82,15 +98,15 @@
     }
   }
 
-  var frozenProto = Object.create(moment.fn);
+  var frozenProto = create(moment.fn);
   for (var key in moment.fn) {
     var func = moment.fn[key];
 
     if (moment.fn.hasOwnProperty(key)
         && typeof func === 'function'
-        && immutableMethods.indexOf(key) === -1) {
+        && !includes.call(immutableMethods, key)) {
 
-      if (mutatorsIfArguments.indexOf(key) === -1) {
+      if (!includes.call(mutatorsIfArguments, key)) {
         frozenProto[key] = frozenMethodGenerator(func);
       } else {
         frozenProto[key] = frozenIfArgumentsMethodGenerator(func);
@@ -110,7 +126,7 @@
   };
   moment.fn.freeze = function () {
     var props = moment.fn.clone.apply(this);
-    var frozen = Object.create(frozenProto);
+    var frozen = create(frozenProto);
     mixin(frozen, props);
     return frozen;
   };

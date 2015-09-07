@@ -73,6 +73,26 @@ assert(frozen.__TEST_PROPERTY, 'existing frozen instances reflect changes to pub
 assert(!moment().__TEST_PROPERTY, 'non-frozen moments do not have properties from frozen prototype');
 
 
+// autowrap and unwrap - integrating third-party plugins that mutate moments
+
+moment.fn.addFive = function () {
+  return moment.fn.add.call(this, 5, 'milliseconds');
+};
+var mutatedFrozen = frozen.clone();
+assert(mutatedFrozen.addFive() === mutatedFrozen, 'ill-behaved plugin returns same instance');
+assert(mutatedFrozen - 5 === +frozen, 'ill-behaved plugin mutates frozen moment');
+
+moment.frozen.autowrap();
+mutatedFrozen = frozen.clone();
+assert(mutatedFrozen.addFive() !== mutatedFrozen, 'wrapped plugin method returns a new instance');
+assert(mutatedFrozen.addFive() - 5 === +frozen, 'wrapped plugin method returns instance with new value');
+
+moment.frozen.unwrap("addFive");
+mutatedFrozen = frozen.clone();
+assert(mutatedFrozen.addFive() === mutatedFrozen, 'unwrapped plugin returns same instance');
+assert(mutatedFrozen - 5 === +frozen, 'unwrapped plugin mutates frozen moment');
+
+
 // final status report
 
 console.log('all ' + numTests + ' tests passed');

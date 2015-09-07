@@ -7,6 +7,7 @@
     global.moment = factory(global.moment);
   }
 }(this, function (moment) {
+  var frozenProto;
 
   var create = Object.create || function createObject(proto) {
     function FrozenMoment() {}
@@ -50,7 +51,9 @@
     'isBetween',
     'isLeapYear',
     'isDST',
-    'isDSTShifted'
+    'isDSTShifted',
+    // Frozen Moment
+    'freeze'
   ];
 
   // moment has a lot of overloaded getters and setters, where calling the
@@ -77,19 +80,20 @@
     'set'
   ];
 
-  function frozenMethodGenerator(orig) {
+  function frozenMethodGenerator(name) {
     return function () {
-      return orig.apply(this.freeze(), arguments);
+      return moment.fn[name].apply(this.freeze(), arguments);
     };
   }
-  function frozenIfArgumentsMethodGenerator(orig) {
+  function frozenIfArgumentsMethodGenerator(name) {
     return function () {
       if (arguments.length) {
-        return orig.apply(this.freeze(), arguments);
+        return moment.fn[name].apply(this.freeze(), arguments);
       }
-      return orig.apply(this);
+      return moment.fn[name].apply(this);
     };
   }
+
   function mixin(dest, props) {
     for (var prop in props) {
       if (props.hasOwnProperty(prop)) {
@@ -97,49 +101,71 @@
       }
     }
   }
-
-  var frozenProto = create(moment.fn);
-  for (var key in moment.fn) {
-    var func = moment.fn[key];
-
-    if (moment.fn.hasOwnProperty(key)
-        && typeof func === 'function'
-        && !includes.call(immutableMethods, key)) {
-
-      if (!includes.call(mutatorsIfArguments, key)) {
-        frozenProto[key] = frozenMethodGenerator(func);
-      } else {
-        frozenProto[key] = frozenIfArgumentsMethodGenerator(func);
-      }
-
-    }
-  }
-  frozenProto.thaw = function thaw() {
-    return moment.fn.clone.call(this);
-  };
-  frozenProto.isFrozen = function isFrozen() {
-    return true;
-  };
-
-  moment.fn.isFrozen = function isFrozen() {
-    return false;
-  };
-  moment.fn.freeze = function freeze() {
+  function freeze() {
     var props = moment.fn.clone.apply(this);
     var frozen = create(frozenProto);
     mixin(frozen, props);
     return frozen;
+  }
+  function thaw() {
+    return moment.fn.clone.call(this);
+  }
+
+  function buildFrozenPrototype() {
+    for (var key in moment.fn) {
+
+      if (key === "freeze") {
+        // never wrap Frozen Moment's freeze method
+        continue;
+      }
+
+      if (moment.fn.hasOwnProperty(key)
+          && typeof moment.fn[key] === 'function'
+          && !includes.call(immutableMethods, key)) {
+
+        if (!includes.call(mutatorsIfArguments, key)) {
+          frozenProto[key] = frozenMethodGenerator(key);
+        } else {
+          frozenProto[key] = frozenIfArgumentsMethodGenerator(key);
+        }
+
+      }
+    }
+
+    frozenProto.isFrozen = function isFrozen() {
+      return true;
+    };
+    frozenProto.clone = freeze;
+    frozenProto.thaw = thaw;
+  }
+
+
+  // wire up prototypes
+
+  moment.fn.isFrozen = function isFrozen() {
+    return false;
   };
-  frozenProto.clone = moment.fn.freeze;
+  moment.fn.freeze = freeze;
 
   moment.frozen = function frozen() {
     return moment.apply(this, arguments).freeze();
   };
-  moment.frozen.fn = frozenProto;
   moment.frozenUtc = function frozenUtc() {
     return moment.utc.apply(this, arguments).freeze();
   };
+  moment.frozen.autowrap = buildFrozenPrototype;
+  moment.frozen.unwrap = function unwrapMethods(/* names... */) {
+    var length = arguments.length;
+    for (var i = 0, name = arguments[i]; i < length; i++) {
+      if (frozenProto[name]) {
+        delete frozenProto[name];
+      }
+      immutableMethods.push(name);
+    }
+  };
 
+  frozenProto = moment.frozen.fn = create(moment.fn);
+  buildFrozenPrototype();
   return moment;
 
 }));

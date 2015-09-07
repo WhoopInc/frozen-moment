@@ -2,11 +2,16 @@
 
 var moment = require('./frozen-moment');
 
+var numTests = 0;
 function assert(bool, str) {
+  numTests++;
   if (!bool) {
     throw new Error(str);
   }
 }
+
+
+// basic functionality
 
 assert(moment.fn.thaw === undefined, 'moment.fn does not provide thaw');
 
@@ -52,4 +57,42 @@ assert(frozenClone.thaw, 'cloning frozen moment creates another frozen moment');
 frozenClone.add(1, 'days');
 assert(frozenClone.isSame(frozen), 'mutators do not change value of cloned frozen moment');
 
-console.log('all tests passed');
+
+// prototype chain and moment.frozen.fn
+
+if (Object.getPrototypeOf) {
+  // TODO Is there a good way to assert the correct prototype chain in IE 8?
+  assert(Object.getPrototypeOf(frozen) === moment.frozen.fn, 'published prototype is used for frozen instances');
+  assert(Object.getPrototypeOf(frozenUtc) === moment.frozen.fn, 'published prototype is used for frozen UTC instances');
+  assert(Object.getPrototypeOf(mom1) === moment.fn, 'non-frozen moment uses published prototype from moment core');
+  assert(moment.frozen.fn !== moment.fn, 'frozen and non-frozen moments use different prototypes');
+  assert(Object.getPrototypeOf(moment.frozen.fn) === moment.fn, 'frozen prototype extends non-frozen prototype');
+}
+moment.frozen.fn.__TEST_PROPERTY = true;
+assert(frozen.__TEST_PROPERTY, 'existing frozen instances reflect changes to published prototype');
+assert(!moment().__TEST_PROPERTY, 'non-frozen moments do not have properties from frozen prototype');
+
+
+// autowrap and unwrap - integrating third-party plugins that mutate moments
+
+moment.fn.addFive = function () {
+  return moment.fn.add.call(this, 5, 'milliseconds');
+};
+var mutatedFrozen = frozen.clone();
+assert(mutatedFrozen.addFive() === mutatedFrozen, 'ill-behaved plugin returns same instance');
+assert(mutatedFrozen - 5 === +frozen, 'ill-behaved plugin mutates frozen moment');
+
+moment.frozen.autowrap();
+mutatedFrozen = frozen.clone();
+assert(mutatedFrozen.addFive() !== mutatedFrozen, 'wrapped plugin method returns a new instance');
+assert(mutatedFrozen.addFive() - 5 === +frozen, 'wrapped plugin method returns instance with new value');
+
+moment.frozen.unwrap("addFive");
+mutatedFrozen = frozen.clone();
+assert(mutatedFrozen.addFive() === mutatedFrozen, 'unwrapped plugin returns same instance');
+assert(mutatedFrozen - 5 === +frozen, 'unwrapped plugin mutates frozen moment');
+
+
+// final status report
+
+console.log('all ' + numTests + ' tests passed');

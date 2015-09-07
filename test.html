@@ -16,8 +16,10 @@
   }
   function wrapConsole(methodName) {
     var oldConsole = console[methodName];
-    console[methodName] = function () {
-      oldConsole.apply(this, arguments);
+    console[methodName] = function (firstArgument) {
+      if (oldConsole && oldConsole.apply) {
+        oldConsole.apply(this, arguments);
+      }
       printToDOM.apply(this, arguments);
     };
   }
@@ -25,7 +27,7 @@
   wrapConsole('log');
   window.onerror = function (err) {
     printToDOM('test failed, see console for details');
-  }
+  };
 </script>
 <body>
   <p>Running tests...</p>

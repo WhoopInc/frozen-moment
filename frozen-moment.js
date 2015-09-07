@@ -9,10 +9,9 @@
 }(this, function (moment) {
   
   var create = Object.create || function(proto) {
-    var obj = {};
-    obj.__proto__ = proto;
-  
-    return obj;
+    function FrozenMoment() {}
+    FrozenMoment.prototype = proto;
+    return new FrozenMoment();
   };
   
   var includes = Array.prototype.includes || function(value){

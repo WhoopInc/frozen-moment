@@ -16,9 +16,9 @@
   };
   
   var includes = Array.prototype.includes || function(value){
-    var l = this.length, i = 0; 
-    while(i < l){
-      if(this[i] === value){
+    var length = this.length;
+    for (var i = 0; i < length; i++) {
+      if (this[i] === value) {
         return true;
       }
     }

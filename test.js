@@ -46,4 +46,10 @@ assert(frozenUtc.utcOffset() === 0, 'frozenUtc is actually in UTC');
 assert(frozenUtc.isFrozen() === true, 'first frozenUtc identifies itself properly');
 assert(frozenUtc2.isFrozen() === true, 'and the second frozenUtc also identifies properly');
 
+var frozenClone = frozen.clone();
+assert(frozenClone !== frozen, 'cloning frozen moment returns a new instance');
+assert(frozenClone.thaw, 'cloning frozen moment creates another frozen moment');
+frozenClone.add(1, 'days');
+assert(frozenClone.isSame(frozen), 'mutators do not change value of cloned frozen moment');
+
 console.log('all tests passed');

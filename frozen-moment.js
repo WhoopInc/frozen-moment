@@ -115,7 +115,7 @@
     }
   }
   frozenProto.thaw = function thaw() {
-    return this.clone();
+    return moment.fn.clone.call(this);
   };
   frozenProto.isFrozen = function isFrozen() {
     return true;
@@ -130,6 +130,7 @@
     mixin(frozen, props);
     return frozen;
   };
+  frozenProto.clone = moment.fn.freeze;
 
   moment.frozen = function frozen() {
     return moment.apply(this, arguments).freeze();

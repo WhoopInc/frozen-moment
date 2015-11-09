@@ -83,13 +83,17 @@
 
   function frozenMethodGenerator(name) {
     return function () {
-      return momentProto[name].apply(this.freeze(), arguments);
+      var thawed = this.thaw();
+      var result = thawed[name].apply(thawed, arguments);
+      return (moment.isMoment(result) ? result.freeze() : result);
     };
   }
   function frozenIfArgumentsMethodGenerator(name) {
     return function () {
       if (arguments.length) {
-        return momentProto[name].apply(this.freeze(), arguments);
+        var thawed = this.thaw();
+        var result = thawed[name].apply(thawed, arguments);
+        return (moment.isMoment(result) ? result.freeze() : result);
       }
       return momentProto[name].apply(this);
     };

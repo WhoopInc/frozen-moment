@@ -112,7 +112,7 @@ that all plugin methods are properly wrapped for immutable behavior.
 ## TODO
 
 Frozen Moment should generally work, and it has been used by a few folks in
-production applications.  The current v0.2 release is a feature complete
+production applications.  The current v0.3 release is a feature complete
 release candidate for v1.0.  Note, however, that we will not release v1.0
 without a comprehensive suite of automated CI testing in Node and in Moment's
 supported browsers.

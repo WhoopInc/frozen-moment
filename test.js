@@ -57,6 +57,11 @@ assert(frozenClone.thaw, 'cloning frozen moment creates another frozen moment');
 frozenClone.add(1, 'days');
 assert(frozenClone.isSame(frozen), 'mutators do not change value of cloned frozen moment');
 
+var frozenStartOfYear = moment.frozen('2015-11-09T09:44:04').startOf('year');
+assert(frozenStartOfYear.valueOf() === moment('2015-01-01T00:00:00').valueOf(), 'start of year is calculated accurately');
+
+assert(frozenStartOfYear.format().substr(0, 19) === '2015-01-01T00:00:00', 'format works with frozen moment')
+
 
 // prototype chain and moment.frozen.fn
 

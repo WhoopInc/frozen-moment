@@ -26,7 +26,7 @@
   wrapConsole('error');
   wrapConsole('log');
   window.onerror = function (err) {
-    printToDOM('test failed, see console for details');
+    printToDOM('test failed:', err);
   };
 </script>
 <body>

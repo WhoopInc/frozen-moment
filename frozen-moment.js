@@ -12,7 +12,9 @@
   }
 
   function FrozenMoment() {}
+  function FrozenDuration() {}
   var momentProto = moment.fn;
+  var durationProto = moment.duration.fn;
 
   var includes = Array.prototype.includes || function arrayIncludes(value) {
     var length = this.length;
@@ -24,7 +26,7 @@
     return false;
   };
 
-  var immutableMethods = [
+  var immutableMomentMethods = [
     // Get
     'weeksInYear',
     'isoWeeksInYear',
@@ -58,7 +60,7 @@
   // moment has a lot of overloaded getters and setters, where calling the
   // method with no arguments will run an immutable getter, and calling the
   // method with one or more arguments will run a mutating setter.
-  var mutatorsIfArguments = [
+  var momentMutatorsIfArguments = [
     // Get + Set
     'millisecond', 'milliseconds',
     'second', 'seconds',
@@ -79,21 +81,56 @@
     'set'
   ];
 
-  function frozenMethodGenerator(name) {
+  var immutableDurationMethods = [
+    'humanize',
+    'asMilliseconds',
+    'asSeconds',
+    'asMinutes',
+    'asHours',
+    'asDays',
+    'asWeeks',
+    'asMonths',
+    'asYears',
+    'as',
+    'get',
+    'format',
+    'valueOf',
+    'toJSON',
+    'toISOString',
+    'toString',
+    // Frozen Moment
+    'freeze'
+  ];
+
+  // moment has a lot of overloaded getters and setters, where calling the
+  // method with no arguments will run an immutable getter, and calling the
+  // method with one or more arguments will run a mutating setter.
+  var durationMutatorsIfArguments = [
+    'milliseconds',
+    'seconds',
+    'minutes',
+    'hours',
+    'days',
+    'weeks',
+    'months',
+    'years'
+  ];
+
+  function frozenMethodGenerator(name, isMoment) {
     return function () {
       var thawed = this.thaw();
       var result = thawed[name].apply(thawed, arguments);
-      return (moment.isMoment(result) ? result.freeze() : result);
+      return (isMoment(result) ? result.freeze() : result);
     };
   }
-  function frozenIfArgumentsMethodGenerator(name) {
+  function frozenIfArgumentsMethodGenerator(name, isMoment, upstreamProto) {
     return function () {
       if (arguments.length) {
         var thawed = this.thaw();
         var result = thawed[name].apply(thawed, arguments);
-        return (moment.isMoment(result) ? result.freeze() : result);
+        return (isMoment(result) ? result.freeze() : result);
       }
-      return momentProto[name].apply(this);
+      return upstreamProto[name].apply(this);
     };
   }
 
@@ -115,7 +152,7 @@
   }
 
   function buildFrozenPrototype() {
-    var MomentSubclass = function () {};
+    function MomentSubclass() {}
     MomentSubclass.prototype = momentProto;
     var frozenProto = new MomentSubclass();
 
@@ -127,12 +164,12 @@
 
       if (momentProto.hasOwnProperty(key)
           && typeof momentProto[key] === 'function'
-          && !includes.call(immutableMethods, key)) {
+          && !includes.call(immutableMomentMethods, key)) {
 
-        if (!includes.call(mutatorsIfArguments, key)) {
-          frozenProto[key] = frozenMethodGenerator(key);
+        if (!includes.call(momentMutatorsIfArguments, key)) {
+          frozenProto[key] = frozenMethodGenerator(key, moment.isMoment);
         } else {
-          frozenProto[key] = frozenIfArgumentsMethodGenerator(key);
+          frozenProto[key] = frozenIfArgumentsMethodGenerator(key, moment.isMoment, momentProto);
         }
       }
     }
@@ -144,6 +181,49 @@
     frozenProto.thaw = thawMoment;
 
     FrozenMoment.prototype = moment.frozen.fn = frozenProto;
+  }
+
+
+  function freezeDuration() {
+    var props = moment.duration(this);
+    var frozen = new FrozenDuration();
+    mixin(frozen, props);
+    return frozen;
+  }
+  function thawDuration() {
+    return moment.duration(this);
+  }
+
+  function buildFrozenDurationPrototype() {
+    function DurationSubclass() {}
+    DurationSubclass.prototype = durationProto;
+    var frozenProto = new DurationSubclass();
+
+    for (var key in durationProto) {
+      if (key === "freeze") {
+        // never wrap Frozen Moment's freeze method
+        continue;
+      }
+
+      if (durationProto.hasOwnProperty(key)
+          && typeof durationProto[key] === 'function'
+          && !includes.call(immutableDurationMethods, key)) {
+
+        if (!includes.call(durationMutatorsIfArguments, key)) {
+          frozenProto[key] = frozenMethodGenerator(key, moment.isDuration);
+        } else {
+          frozenProto[key] = frozenIfArgumentsMethodGenerator(key, moment.isDuration, durationProto);
+        }
+      }
+    }
+
+    frozenProto.isFrozen = function isFrozen() {
+      return true;
+    };
+    frozenProto.clone = freezeDuration;
+    frozenProto.thaw = thawDuration;
+
+    FrozenDuration.prototype = moment.frozenDuration.fn = frozenProto;
   }
 
 
@@ -167,11 +247,21 @@
       if (FrozenMoment.prototype[name]) {
         delete FrozenMoment.prototype[name];
       }
-      immutableMethods.push(name);
+      immutableMomentMethods.push(name);
     }
   };
 
+  durationProto.isFrozen = function isFrozen() {
+    return false;
+  };
+  durationProto.freeze = freezeDuration;
+
+  moment.frozenDuration = function frozen() {
+    return moment.duration.apply(this, arguments).freeze();
+  };
+
   buildFrozenPrototype();
+  buildFrozenDurationPrototype();
   return moment;
 
 }));

@@ -7,6 +7,10 @@
     global.moment = factory(global.moment);
   }
 }(this, function (moment) {
+  if (!moment) {
+    throw new Error('frozen-moment cannot find moment');
+  }
+
   function FrozenMoment() {}
   var momentProto = moment.fn;
 
@@ -100,13 +104,13 @@
       }
     }
   }
-  function freeze() {
+  function freezeMoment() {
     var props = momentProto.clone.apply(this);
     var frozen = new FrozenMoment();
     mixin(frozen, props);
     return frozen;
   }
-  function thaw() {
+  function thawMoment() {
     return momentProto.clone.call(this);
   }
 
@@ -136,8 +140,8 @@
     frozenProto.isFrozen = function isFrozen() {
       return true;
     };
-    frozenProto.clone = freeze;
-    frozenProto.thaw = thaw;
+    frozenProto.clone = freezeMoment;
+    frozenProto.thaw = thawMoment;
 
     FrozenMoment.prototype = moment.frozen.fn = frozenProto;
   }
@@ -148,7 +152,7 @@
   momentProto.isFrozen = function isFrozen() {
     return false;
   };
-  momentProto.freeze = freeze;
+  momentProto.freeze = freezeMoment;
 
   moment.frozen = function frozen() {
     return moment.apply(this, arguments).freeze();

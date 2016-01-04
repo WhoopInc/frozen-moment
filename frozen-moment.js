@@ -7,14 +7,12 @@
     global.moment = factory(global.moment);
   }
 }(this, function (moment) {
-  var frozenProto;
-  var momentProto = moment.fn;
+  if (!moment) {
+    throw new Error('frozen-moment cannot find moment');
+  }
 
-  var create = Object.create || function createObject(proto) {
-    function FrozenMoment() {}
-    FrozenMoment.prototype = proto;
-    return new FrozenMoment();
-  };
+  function FrozenMoment() {}
+  var momentProto = moment.fn;
 
   var includes = Array.prototype.includes || function arrayIncludes(value) {
     var length = this.length;
@@ -108,7 +106,7 @@
   }
   function freeze() {
     var props = momentProto.clone.apply(this);
-    var frozen = create(frozenProto);
+    var frozen = new FrozenMoment();
     mixin(frozen, props);
     return frozen;
   }
@@ -117,8 +115,11 @@
   }
 
   function buildFrozenPrototype() {
-    for (var key in momentProto) {
+    var MomentSubclass = function () {};
+    MomentSubclass.prototype = momentProto;
+    var frozenProto = new MomentSubclass();
 
+    for (var key in momentProto) {
       if (key === "freeze") {
         // never wrap Frozen Moment's freeze method
         continue;
@@ -133,7 +134,6 @@
         } else {
           frozenProto[key] = frozenIfArgumentsMethodGenerator(key);
         }
-
       }
     }
 
@@ -142,6 +142,8 @@
     };
     frozenProto.clone = freeze;
     frozenProto.thaw = thaw;
+
+    FrozenMoment.prototype = moment.frozen.fn = frozenProto;
   }
 
 
@@ -162,14 +164,13 @@
   moment.frozen.unwrap = function unwrapMethods(/* names... */) {
     var length = arguments.length;
     for (var i = 0, name = arguments[i]; i < length; i++) {
-      if (frozenProto[name]) {
-        delete frozenProto[name];
+      if (FrozenMoment.prototype[name]) {
+        delete FrozenMoment.prototype[name];
       }
       immutableMethods.push(name);
     }
   };
 
-  frozenProto = moment.frozen.fn = create(momentProto);
   buildFrozenPrototype();
   return moment;
 

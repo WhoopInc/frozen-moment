@@ -11,7 +11,7 @@ function assert(bool, str) {
 }
 
 
-// basic functionality
+// basic moment functionality
 
 assert(moment.fn.thaw === undefined, 'moment.fn does not provide thaw');
 
@@ -63,6 +63,37 @@ assert(frozenStartOfYear.valueOf() === moment('2015-01-01T00:00:00').valueOf(), 
 assert(frozenStartOfYear.format().substr(0, 19) === '2015-01-01T00:00:00', 'format works with frozen moment')
 
 
+// basic duration functionality
+
+assert(moment.duration.fn.thaw === undefined, 'moment.duration.fn does not provide thaw');
+
+var duration = moment.duration(30000);
+assert(duration.asSeconds() === 30, 'duration is created correctly');
+duration.add(15, 'seconds');
+assert(duration.asSeconds() === 45, 'non-frozen duration does not clone on modifications');
+assert(duration.isFrozen() === false, 'non-frozen duration is not frozen');
+
+var frozenDuration = duration.freeze();
+assert(duration !== frozenDuration, 'freezing a duration returns a new object reference');
+assert(frozenDuration.asSeconds() === 45, 'duration value is unchanged after freezing');
+assert(frozenDuration.isFrozen() === true, 'frozen duration identifies as such');
+assert(moment.isDuration(frozenDuration) === true, 'frozen duration is still a duration');
+
+var frozenDuration2 = frozenDuration.add(15, 'seconds');
+assert(frozenDuration !== frozenDuration2, 'adding to frozen moment returns new instance');
+assert(frozenDuration2.isFrozen() === true, 'result of addition is still frozen');
+assert(frozenDuration2.asSeconds() === 60, 'can add to frozen duration');
+assert(frozenDuration.asSeconds() === 45, 'frozen duration value is unchanged by addition');
+
+var thawedDuration = frozenDuration.thaw();
+assert(thawedDuration !== frozenDuration, 'thawing duration returns new instance');
+assert(thawedDuration.asSeconds() === 45, 'value does not change when thawing');
+assert(thawedDuration.isFrozen() === false, 'thawed duration is not frozen');
+thawedDuration.subtract(15, 'seconds');
+assert(thawedDuration.asSeconds() === 30, 'subtracting from thawed duration mutates existing instance');
+assert(frozenDuration.asSeconds() === 45, 'frozen duration is unchanged when mutating thawed');
+
+
 // prototype chain and moment.frozen.fn
 
 if (Object.getPrototypeOf) {
@@ -72,10 +103,20 @@ if (Object.getPrototypeOf) {
   assert(Object.getPrototypeOf(mom1) === moment.fn, 'non-frozen moment uses published prototype from moment core');
   assert(moment.frozen.fn !== moment.fn, 'frozen and non-frozen moments use different prototypes');
   assert(Object.getPrototypeOf(moment.frozen.fn) === moment.fn, 'frozen prototype extends non-frozen prototype');
+
+  assert(Object.getPrototypeOf(frozenDuration) === moment.frozenDuration.fn, 'published prototype is used for frozen durations');
+  assert(Object.getPrototypeOf(duration) === moment.duration.fn, 'non-frozen duration prototype from upstream moment');
+  assert(moment.duration.fn !== moment.frozenDuration.fn, 'frozen and un-frozen durations use different prototypes');
+  assert(Object.getPrototypeOf(moment.frozenDuration.fn) === moment.duration.fn, 'frozen duration prototype extends non-frozen prototype');
 }
+
 moment.frozen.fn.__TEST_PROPERTY = true;
 assert(frozen.__TEST_PROPERTY, 'existing frozen instances reflect changes to published prototype');
 assert(!moment().__TEST_PROPERTY, 'non-frozen moments do not have properties from frozen prototype');
+
+moment.frozenDuration.fn.__TEST_PROPERTY = true;
+assert(frozenDuration.__TEST_PROPERTY, 'existing frozen durations reflect changes to published prototype');
+assert(!moment.duration().__TEST_PROPERTY, 'non-frozen durations do not have properties from frozen prototype');
 
 
 // autowrap and unwrap - integrating third-party plugins that mutate moments

@@ -7,6 +7,10 @@
     global.moment = factory(global.moment);
   }
 }(this, function (moment) {
+  if (!moment) {
+    throw new Error('frozen-moment cannot find moment');
+  }
+
   function FrozenMoment() {}
   var momentProto = moment.fn;
 

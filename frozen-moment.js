@@ -78,7 +78,8 @@
     'year', 'years',
     'weekYear',
     'isoWeekYear',
-    'set'
+    'set',
+    'tz'
   ];
 
   var immutableDurationMethods = [

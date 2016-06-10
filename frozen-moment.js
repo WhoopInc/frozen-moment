@@ -48,6 +48,8 @@
     // Query
     'isBefore',
     'isSame',
+    'isSameOrAfter',
+    'isSameOrBefore',
     'isAfter',
     'isBetween',
     'isLeapYear',

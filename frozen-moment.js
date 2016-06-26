@@ -1,8 +1,8 @@
 (function (global, factory) {
-  if (typeof exports === 'object') {
-    module.exports = factory(require('moment'));
-  } else if (typeof define === 'function' && define.amd) {
+  if (typeof define === 'function' && define.amd) {
     define(['moment'], factory);
+  } else if (typeof exports === 'object') {
+    module.exports = factory(require('moment'));
   } else {
     global.moment = factory(global.moment);
   }

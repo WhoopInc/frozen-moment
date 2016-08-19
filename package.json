@@ -26,6 +26,6 @@
   },
   "homepage": "https://github.com/WhoopInc/frozen-moment",
   "dependencies": {
-    "moment": ">=2.10 <3"
+    "moment": ">=2.11.2 <3"
   }
 }

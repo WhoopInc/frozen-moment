@@ -112,25 +112,19 @@ that all plugin methods are properly wrapped for immutable behavior.
 ## TODO
 
 Frozen Moment should generally work, and it has been used by a few folks in
-production applications.  The current v0.3 release is a feature complete
-release candidate for v1.0.  Note, however, that we will not release v1.0
-without a comprehensive suite of automated CI testing in Node and in Moment's
-supported browsers.
+production applications.  The current v0.4 release is a reasonably stable
+implementation of the core ideas.  This code has inspired and informed
+Moment's implementation of immutability, which is coming in version 3.0.
 
-Until we set up our automated CI builds, our maintainer is manually running our
-unit tests in Node and a variety of browsers (IE 8 and the current releases of
-Chrome, Firefox, and Safari) to ensure broad runtime compatibility.
-
-Since Frozen Moment aims to be the Moment community's de-facto standard
-solution for immutable Moment instances, we'd also love to see a bit wider
-usage and feedback from the community before releasing v1.0.  If Frozen Moment
-doesn't do what you need, or if you have technical reasons to prefer a
-different API, we want your feedback!
+Our maintainer is manually running our unit tests in a variety of browsers
+(IE 8 and the current releases of Chrome, Firefox, and Safari) to ensure broad
+runtime compatibility, in addition to our CI build with Node.
 
 Pull requests are enthusiastically welcomed for improvements on our
 current [to-do list][].
 If you have other ideas for new features, it's often a good idea to get our
-feedback on your plans before you bother writing the code.  In any event, please remember to submit unit tests to verify your changes.
+feedback on your plans before you bother writing the code.  In any event, please
+remember to submit unit tests to verify your changes.
 
 ## Historical Note
 
